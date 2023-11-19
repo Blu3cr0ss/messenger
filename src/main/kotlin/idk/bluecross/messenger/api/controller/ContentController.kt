@@ -2,19 +2,15 @@ package idk.bluecross.messenger.api.controller
 
 import idk.bluecross.messenger.service.FileService
 import idk.bluecross.messenger.service.UserService
-import idk.bluecross.messenger.store.entity.*
+import idk.bluecross.messenger.store.entity.Chat
+import idk.bluecross.messenger.store.entity.FileInDb
+import idk.bluecross.messenger.store.entity.User
 import idk.bluecross.messenger.util.content.GraphicContent
 import idk.bluecross.messenger.util.content.TextContent
-import idk.bluecross.messenger.util.db.FluxDocRef
-import idk.bluecross.messenger.util.db.MonoDocRef
 import org.bson.types.ObjectId
+import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.ReactiveMongoOperations
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 import java.io.File
 
@@ -23,7 +19,7 @@ import java.io.File
 class ContentController(
     val fileService: FileService,
     val userService: UserService,
-    val mongoOperations: ReactiveMongoOperations
+    val mongoOperations: MongoOperations
 ) {
     @GetMapping("/text")
     fun text(
@@ -47,30 +43,28 @@ class ContentController(
             )
         )
 
-    @PostMapping("saveUser")
-    fun saveUser() = userService.save(
-        User(
-            avatar = MonoDocRef(
-                GraphicContent::class.java,
-                GraphicContent(
-                    MonoDocRef(
-                        FileInDb::class.java,
-                        FileInDb(
-                            "user1_avatar.jpg", "qwerty!".toByteArray()
-                        )
-                    )
-                )
-            ),
-            bio = "test bio",
-            chats = FluxDocRef(Chat::class.java),
-            userName = "user1",
-            displayedName = "First User",
-            email = "fake@email.com",
-            password = "123321",
-            status = User.Status.OFFLINE,
-        )
-    )
-
     @PostMapping("testUser/{id}")
     fun testUser(@PathVariable id: String) = userService.find(ObjectId(id))
+
+    var u = User(
+        "bluecross",
+        "Bluecross",
+        "no bio",
+        FileInDb("bluecross_avatar", byteArrayOf(1)),
+        User.Status.OFFLINE,
+        arrayListOf(),
+        "",
+        ""
+    )
+    val chat = Chat(
+        arrayListOf(),
+        "chat1",
+        "no desc",
+        arrayListOf(u)
+    )
+
+    @PostMapping("saveWithRelations")
+    fun saveWithRelations() = mongoOperations.save(
+        u.apply { chats.add(chat) }
+    )
 }

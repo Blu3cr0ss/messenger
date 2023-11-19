@@ -2,8 +2,6 @@ package idk.bluecross.messenger.store.entity
 
 import idk.bluecross.messenger.util.annotation.CascadeSave
 import idk.bluecross.messenger.util.content.ContentTree
-import idk.bluecross.messenger.util.db.FluxDocRef
-import idk.bluecross.messenger.util.db.MonoDocRef
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.DBRef
@@ -13,12 +11,12 @@ import java.time.Instant
 
 @Document
 class Message(
-    var sender: MonoDocRef<User>,
-    @DocumentReference
-    @CascadeSave
-    var reactions: FluxDocRef<Reaction>,
+    @DBRef
+    var sender: User,
+    @DBRef
+    var reactions: List<Reaction>,
     var contentTree: ContentTree,
-    var state: Message.State
+    var state: State
 ) {
     @Id
     var id = ObjectId()
