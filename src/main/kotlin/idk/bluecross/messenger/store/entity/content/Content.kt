@@ -1,4 +1,4 @@
-package idk.bluecross.messenger.util.content
+package idk.bluecross.messenger.store.entity.content
 
 abstract class Content {
     enum class Type {

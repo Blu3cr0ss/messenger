@@ -1,6 +1,7 @@
 package idk.bluecross.messenger.util.event
 
 import idk.bluecross.messenger.util.annotation.CascadeSave
+import idk.bluecross.messenger.util.clazz.isSubtypeOf
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.mapping.DBRef
@@ -18,36 +19,24 @@ class CascadeSaveEventListener(
 ) : AbstractMongoEventListener<Any>() {
     override fun onBeforeConvert(event: BeforeConvertEvent<Any>) {
         val source = event.source
-        println(source::class.java.name + " -> ")
         ReflectionUtils.doWithFields(
             source.javaClass
         ) { field ->
             ReflectionUtils.makeAccessible(field)
-            println("   " + field.name)
             if (
                 field.isAnnotationPresent(DBRef::class.java) &&
                 field.isAnnotationPresent(CascadeSave::class.java)
             ) {
-                println("       annotation present on field " + field.name)
-                println(field.type)
-                val fieldValue = field.get(source)
-                val fieldValueId =
-                    fieldValue::class.java.getDeclaredField("id").apply { ReflectionUtils.makeAccessible(this) }
-                        .get(fieldValue) as ObjectId
-                println("           $fieldValueId")
-                if (!mongoOperations.exists(
-                        Query(Criteria.where("id").`is`(fieldValueId)),
-                        fieldValue::class.java
-                    )
-                ) {
-                    mongoOperations.save(
-                        fieldValue
-                    ).apply { print("           saved:"); println(this) }
-                } else mongoOperations.findAndReplace(
-                    Query(Criteria.where("_id").`is`(fieldValueId)),
-                    fieldValue
-                )!!
-
+                val fieldValues: List<Any> = run {
+                    val v = field.get(source)
+                    if (v::class.java.isSubtypeOf(Iterable::class.java)) {
+                        return@run (v as Iterable<Any>).toList()
+                    } else return@run listOf(v)
+                }
+                val fieldValuesIds = fieldValues.map {
+                    it::class.java.getDeclaredField("id").apply(ReflectionUtils::makeAccessible).get(it) as ObjectId
+                }
+                fieldValues.forEach(mongoOperations::save)
             }
         }
     }

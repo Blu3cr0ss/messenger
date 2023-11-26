@@ -1,7 +1,7 @@
 package idk.bluecross.messenger.store.entity
 
 import idk.bluecross.messenger.util.annotation.CascadeSave
-import idk.bluecross.messenger.util.content.GraphicContent
+import idk.bluecross.messenger.store.entity.content.GraphicContent
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient

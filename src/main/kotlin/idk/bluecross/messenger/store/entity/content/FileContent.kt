@@ -1,4 +1,4 @@
-package idk.bluecross.messenger.util.content
+package idk.bluecross.messenger.store.entity.content
 
 import idk.bluecross.messenger.store.entity.FileInDb
 
