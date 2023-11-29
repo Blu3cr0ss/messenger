@@ -17,6 +17,11 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	api('io.jsonwebtoken:jjwt-api:0.12.3')
+	runtimeOnly('io.jsonwebtoken:jjwt-impl:0.12.3')
+	runtimeOnly('io.jsonwebtoken:jjwt-orgjson:0.12.3')
 
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 

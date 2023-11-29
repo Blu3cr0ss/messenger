@@ -10,8 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
 class User(
-    var userName: String,
-    var displayedName: String,
     var bio: String,
     @DBRef
     @CascadeSave
@@ -20,8 +18,7 @@ class User(
     @DBRef
     @CascadeSave
     var chats: ArrayList<Chat>,
-    var email: String,
-    var password: String
+    var userDetails: UserDetails
 ) {
     @Id
     var id = ObjectId()
@@ -33,5 +30,10 @@ class User(
         ONLINE,
         OFFLINE,
         DND
+    }
+
+    companion object {
+        val DEFAULT_AVATAR_FILE =
+            FileInDb("defaultAvatar", byteArrayOf(1)).apply { id = ObjectId("6566fa53ee30b040e65e1a3d") }
     }
 }

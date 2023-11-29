@@ -1,4 +1,4 @@
-package idk.bluecross.messenger.api.service
+package idk.bluecross.messenger.service
 
 import idk.bluecross.messenger.store.dao.FileDao
 import idk.bluecross.messenger.store.entity.FileInDb
