@@ -41,7 +41,6 @@ class SecurityConfig(
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         .authorizeHttpRequests {
             it
-                .requestMatchers("/api/secure/*").fullyAuthenticated()
                 .anyRequest().permitAll()
         }
         .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)

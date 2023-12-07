@@ -1,10 +1,9 @@
-package idk.bluecross.messenger.api.controller
+package idk.bluecross.messenger.api
 
 import idk.bluecross.messenger.service.JwtService
 import idk.bluecross.messenger.service.UserService
 import idk.bluecross.messenger.store.dto.LoginDto
 import idk.bluecross.messenger.store.dto.RegisterDto
-import idk.bluecross.messenger.store.entity.FileInDb
 import idk.bluecross.messenger.store.entity.User
 import idk.bluecross.messenger.store.entity.UserDetails
 import jakarta.servlet.http.HttpServletRequest
@@ -12,22 +11,19 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 class AuthController(
     var jwtService: JwtService,
     var userService: UserService,
     var encoder: PasswordEncoder,
-    var authenticationManager: AuthenticationManager,
-    var authenticationManagerBuilder: AuthenticationManagerBuilder
+    var authenticationManager: AuthenticationManager
 ) {
 
     @PostMapping("/register")
@@ -50,12 +46,12 @@ class AuthController(
     }
 
     @PostMapping("/login")
-    fun login(req: LoginDto,httpServletRequest:HttpServletRequest): ResponseEntity<String> {
+    fun login(req: LoginDto, httpServletRequest: HttpServletRequest): ResponseEntity<String> {
         return try {
             val auth =
                 authenticationManager.authenticate(UsernamePasswordAuthenticationToken(req.username, req.password))
             SecurityContextHolder.getContext().authentication = auth
-            val jwt = jwtService.generateToken(auth,httpServletRequest.remoteAddr)
+            val jwt = jwtService.generateToken(auth, httpServletRequest.remoteAddr)
             ResponseEntity.status(HttpStatus.OK).body(jwt)
         } catch (e: Exception) {
             e.printStackTrace()
