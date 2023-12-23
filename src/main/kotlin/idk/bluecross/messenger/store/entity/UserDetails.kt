@@ -2,7 +2,7 @@ package idk.bluecross.messenger.store.entity
 
 import org.springframework.security.core.userdetails.UserDetails
 
-class UserDetails(
+data class UserDetails(
     private var username: String,
     var displayedName: String,
     var email: String,

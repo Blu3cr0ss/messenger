@@ -1,31 +1,27 @@
 package idk.bluecross.messenger.store.entity
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import idk.bluecross.messenger.util.annotation.CascadeSave
 import idk.bluecross.messenger.store.entity.content.ContentTree
-import org.bson.types.ObjectId
-import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.DBRef
-import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.data.mongodb.core.mapping.DocumentReference
 import java.time.Instant
 
-@Document
-class Message(
+class Message @JsonCreator constructor(
     @DBRef
-    var sender: User,
-    @DBRef
-    var reactions: List<Reaction>,
-    var contentTree: ContentTree,
-    var state: State
+    @CascadeSave
+    @JsonProperty("sender") var sender: IdRef<User>,
+    @JsonProperty("reactions") var reactions: List<Reaction>,
+    @JsonProperty("contentTree") var contentTree: ContentTree,
+    @JsonProperty("state") var state: State,
+    @JsonProperty("timestamp") var timestamp: Instant = Instant.now()
 ) {
-    @Id
-    var id = ObjectId()
-    var timestamp = Instant.now()
-
-
     enum class State {
         SENDING,
         SENT,
         READ
     }
+
+//    constructor() : this(IdRef(ObjectId(), User::class.java), listOf(), ContentTree(), State.SENDING)
+
 }

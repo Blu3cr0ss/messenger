@@ -1,5 +1,6 @@
 package idk.bluecross.messenger.store.entity
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import org.bson.types.ObjectId
 import org.jetbrains.annotations.NotNull
 import org.springframework.data.annotation.Id
@@ -10,7 +11,12 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.io.File
 
 @Document
-class FileInDb(var fileName: String, var byteArr: ByteArray) {
+class FileInDb(var fileName: String, var byteArr: ByteArray) : DBEntity {
     @Id
-    var id = ObjectId()
+    override var id = ObjectId()
+
+    @JsonCreator
+    constructor(fileName: String, byteArr: ByteArray, id: ObjectId) : this(fileName, byteArr) {
+        this.id = id
+    }
 }

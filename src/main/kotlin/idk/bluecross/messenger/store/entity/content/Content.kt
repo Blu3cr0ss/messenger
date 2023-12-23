@@ -1,5 +1,8 @@
 package idk.bluecross.messenger.store.entity.content
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
+
+@JsonSubTypes()
 abstract class Content {
     enum class Type {
         FILE,
@@ -11,4 +14,5 @@ abstract class Content {
     }
 
     abstract var type: Type
+    abstract fun getContent(): Any
 }

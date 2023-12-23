@@ -13,7 +13,7 @@ class UserService(
     val userDao: UserDao
 ) : UserDetailsService {
     fun save(user: User) = userDao.save(user)
-    fun find(id: ObjectId) = userDao.find(id)
+    fun find(id: ObjectId) = userDao.findById(id)
 
     fun emailExists(email: String) = userDao.existsByEmail(email)
     fun usernameExists(username: String) = userDao.existsByUsername(username)
@@ -21,5 +21,7 @@ class UserService(
     @Throws(UsernameNotFoundException::class)
     override fun loadUserByUsername(username: String): UserDetails =
         userDao.findByUsername(username).userDetails
+
+    fun findUserByUsername(username: String) = userDao.findByUsername(username)
 
 }

@@ -1,5 +1,6 @@
 package idk.bluecross.messenger.util.security
 
+import idk.bluecross.messenger.service.AuthService
 import idk.bluecross.messenger.service.JwtService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -14,7 +15,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtTokenFilter(
     var jwtService: JwtService,
-    var userDetailsService: UserDetailsService
+    var userDetailsService: UserDetailsService,
+    var authService: AuthService
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -23,11 +25,8 @@ class JwtTokenFilter(
     ) {
         runCatching {
             if (request.getHeader("Authorization")?.startsWith("Bearer ") == true) {
-                val jwt = request.getHeader("Authorization").substring(7)
-                val username = jwtService.getName(jwt)
-                val userDetails = userDetailsService.loadUserByUsername(username)
                 SecurityContextHolder.getContext().authentication =
-                    UsernamePasswordAuthenticationToken(userDetails, null)
+                    authService.loginByAuthorizationHeader(request.getHeader("Authorization"))
             }
         }.onFailure {
             it.printStackTrace()

@@ -9,9 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
 class Reaction {
-    @Id
-    var id = ObjectId()
-
     @DBRef
     lateinit var reacted: List<User>
     lateinit var content: EmojiContent

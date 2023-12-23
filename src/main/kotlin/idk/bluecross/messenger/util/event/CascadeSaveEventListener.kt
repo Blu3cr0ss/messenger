@@ -2,13 +2,12 @@ package idk.bluecross.messenger.util.event
 
 import idk.bluecross.messenger.util.annotation.CascadeSave
 import idk.bluecross.messenger.util.clazz.isSubtypeOf
+import idk.bluecross.messenger.store.entity.IdRef
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener
 import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent
-import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Component
 import org.springframework.util.ReflectionUtils
 
@@ -32,7 +31,12 @@ class CascadeSaveEventListener(
                     if (v::class.java.isSubtypeOf(Iterable::class.java)) {
                         return@run (v as Iterable<Any>).toList()
                     } else return@run listOf(v)
-                }
+                }.run {
+                    if (this.isNotEmpty() && this[0]::class.java.isSubtypeOf(IdRef::class.java))
+                        map { (it as IdRef<*>).get() }
+                    else this
+                }.filterNotNull()
+
                 val fieldValuesIds = fieldValues.map {
                     it::class.java.getDeclaredField("id").apply(ReflectionUtils::makeAccessible).get(it) as ObjectId
                 }

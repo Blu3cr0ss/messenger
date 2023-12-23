@@ -16,7 +16,7 @@ class UserDao(
     val userRepository: UserRepository
 ) {
     fun save(user: User) = userRepository.insert(user)
-    fun find(id: ObjectId) = userRepository.findById(id)
+    fun findById(id: ObjectId) = userRepository.findById(id)
 
     fun existsByUsername(username: String) = userRepository.existsByUsername(username)
     fun existsByEmail(email: String) = userRepository.existsByEmail(email)

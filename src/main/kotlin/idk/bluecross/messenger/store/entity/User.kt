@@ -19,9 +19,9 @@ class User(
     @CascadeSave
     var chats: ArrayList<Chat>,
     var userDetails: UserDetails
-) {
+) : DBEntity {
     @Id
-    var id = ObjectId()
+    override var id = ObjectId()
 
     @Transient
     var avatar = GraphicContent(avatarFile)
