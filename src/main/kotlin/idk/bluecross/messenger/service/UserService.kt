@@ -20,8 +20,10 @@ class UserService(
 
     @Throws(UsernameNotFoundException::class)
     override fun loadUserByUsername(username: String): UserDetails =
-        userDao.findByUsername(username).userDetails
+        userDao.findUserDetailsByUsername(username)[0]
 
     fun findUserByUsername(username: String) = userDao.findByUsername(username)
+
+    fun getChats(id: Any) = userDao.getChats(id)
 
 }

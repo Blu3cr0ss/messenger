@@ -2,9 +2,9 @@ package idk.bluecross.messenger
 
 import idk.bluecross.messenger.service.UserService
 import idk.bluecross.messenger.store.entity.FileInDb
+import idk.bluecross.messenger.store.entity.IdRefList
 import idk.bluecross.messenger.store.entity.User
 import idk.bluecross.messenger.store.entity.UserDetails
-import idk.bluecross.messenger.store.repository.UserRepository
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,7 +25,7 @@ class UserServiceTest(
                 "",
                 FileInDb("", byteArrayOf(1)),
                 User.Status.OFFLINE,
-                arrayListOf(),
+                IdRefList(),
                 UserDetails(
                     username, "Bebrik", "qwe@qwe.qwe", "now give me your password"
                 )

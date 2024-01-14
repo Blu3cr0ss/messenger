@@ -4,6 +4,7 @@ import idk.bluecross.messenger.service.JwtService
 import idk.bluecross.messenger.service.UserService
 import idk.bluecross.messenger.store.dto.LoginDto
 import idk.bluecross.messenger.store.dto.RegisterDto
+import idk.bluecross.messenger.store.entity.IdRefList
 import idk.bluecross.messenger.store.entity.User
 import idk.bluecross.messenger.store.entity.UserDetails
 import jakarta.servlet.http.HttpServletRequest
@@ -13,7 +14,6 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.validation.Errors
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -38,7 +38,7 @@ class AuthController(
                 "",
                 User.DEFAULT_AVATAR_FILE,
                 User.Status.OFFLINE,
-                arrayListOf(),
+                IdRefList(),
                 UserDetails(req.username, req.username, req.email, encoder.encode(req.password))
             )
             userService.save(user)

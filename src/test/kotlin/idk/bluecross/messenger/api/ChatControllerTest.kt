@@ -5,7 +5,6 @@ import idk.bluecross.messenger.store.entity.Chat
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.ResponseEntity
@@ -20,7 +19,7 @@ class ChatControllerTest(
     fun fromChat() {
         Assertions.assertTrue(
             controller.createNewChat(
-                CreateChatDto("chatik", "", listOf(ObjectId("6566fa53ee30b040e65e1a3e")))
+                CreateChatDto("chatik", "some desc", listOf(ObjectId("6566fa53ee30b040e65e1a3e")))
             ) is Chat,
             "Ответ не Chat"
         )

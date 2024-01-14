@@ -11,7 +11,7 @@ class Chat(
     var name: String,
     var description: String,
     @DBRef
-    var members: ArrayList<User>
+    var members: IdRefList<User>
 ) : DBEntity {
     @Id
     override var id = ObjectId()

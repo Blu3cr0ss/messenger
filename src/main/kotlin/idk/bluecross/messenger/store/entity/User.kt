@@ -1,7 +1,7 @@
 package idk.bluecross.messenger.store.entity
 
-import idk.bluecross.messenger.util.annotation.CascadeSave
 import idk.bluecross.messenger.store.entity.content.GraphicContent
+import idk.bluecross.messenger.util.annotation.CascadeSave
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
@@ -17,11 +17,16 @@ class User(
     var status: Status,
     @DBRef
     @CascadeSave
-    var chats: ArrayList<Chat>,
+    var chats: IdRefList<Chat>,
+    @CascadeSave
     var userDetails: UserDetails
 ) : DBEntity {
     @Id
     override var id = ObjectId()
+
+    init {
+        userDetails.id = this.id
+    }
 
     @Transient
     var avatar = GraphicContent(avatarFile)

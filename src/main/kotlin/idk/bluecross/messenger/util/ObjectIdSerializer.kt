@@ -17,6 +17,6 @@ class ObjectIdSerializer : StdSerializer<ObjectId>(ObjectId::class.java) {
 
 class ObjectIdDeserializer : StdDeserializer<ObjectId>(ObjectId::class.java) {
     override fun deserialize(p: JsonParser?, ctxt: DeserializationContext?): ObjectId {
-        return ObjectId()
+        return ObjectId(p!!.valueAsString)
     }
 }

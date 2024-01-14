@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import idk.bluecross.messenger.store.dao.ContentDao
 import idk.bluecross.messenger.store.entity.FileInDb
-import idk.bluecross.messenger.store.entity.IdRef
 import idk.bluecross.messenger.store.entity.content.*
 import idk.bluecross.messenger.util.spring.Beans
 import org.bson.types.ObjectId

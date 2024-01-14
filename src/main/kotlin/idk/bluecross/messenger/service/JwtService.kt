@@ -1,19 +1,12 @@
 package idk.bluecross.messenger.service
 
 import idk.bluecross.messenger.store.entity.UserDetails
-import io.jsonwebtoken.Jwt
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer.UserDetailsBuilder
 import org.springframework.security.core.Authentication
-import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.stereotype.Service
-import java.security.Key
-import java.security.interfaces.RSAKey
-import java.time.Instant
 import java.util.*
-import javax.crypto.spec.SecretKeySpec
 
 @Service
 class JwtService {

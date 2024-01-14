@@ -1,7 +1,6 @@
 package idk.bluecross.messenger.store.entity.content
 
-import idk.bluecross.messenger.store.entity.content.Content
-import java.util.LinkedList
+import java.util.*
 
 class ContentTree() : LinkedList<Content>() {
     constructor(vararg contents: Content) : this() {

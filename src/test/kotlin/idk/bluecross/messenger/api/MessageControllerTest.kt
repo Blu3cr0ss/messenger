@@ -1,15 +1,15 @@
 package idk.bluecross.messenger.api
 
 import idk.bluecross.messenger.authenticate
-import idk.bluecross.messenger.service.UserService
 import idk.bluecross.messenger.defaultSessionHandler
+import idk.bluecross.messenger.service.UserService
 import idk.bluecross.messenger.store.dto.MessageDto
-import idk.bluecross.messenger.store.entity.*
+import idk.bluecross.messenger.store.entity.FileInDb
+import idk.bluecross.messenger.store.entity.Message
 import idk.bluecross.messenger.store.entity.content.ContentTree
 import idk.bluecross.messenger.store.entity.content.FileContent
 import idk.bluecross.messenger.store.entity.content.TextContent
 import idk.bluecross.messenger.subscription
-import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -18,7 +18,7 @@ import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.context.TestPropertySource
 import org.springframework.web.socket.WebSocketHttpHeaders
 import org.springframework.web.socket.messaging.WebSocketStompClient
-import java.util.UUID
+import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = ["classpath:test-db.properties"])
@@ -50,7 +50,7 @@ class MessageControllerTest(
                 MessageDto(
                     ContentTree(
                         TextContent(UUID.randomUUID().toString()),
-                        FileContent(IdRef<FileInDb>(ObjectId("6566fa53ee30b040e65e1a3d"), FileInDb::class.java).get()!!)
+                        FileContent(FileInDb("", byteArrayOf(1)))
                     ),
                 )
             )
