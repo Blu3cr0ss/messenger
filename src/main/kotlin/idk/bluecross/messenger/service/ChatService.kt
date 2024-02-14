@@ -18,6 +18,8 @@ class ChatService(
     fun saveWithUserIds(name: String, description: String, ids: List<ObjectId>) =
         chatDao.saveChat(name, description, ids)
 
-    fun saveMessage(chatId: ObjectId, message: Message) = chatDao.saveMessage(chatId, message)
+    fun saveMessage(chatId: ObjectId, message: Message) {
+        chatDao.saveMessage(chatId, message)
+    }
 
 }

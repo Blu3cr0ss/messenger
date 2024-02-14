@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
-import idk.bluecross.messenger.store.dao.ContentDao
+import idk.bluecross.messenger.store.dto.ContentDto
 import idk.bluecross.messenger.store.entity.FileInDb
 import idk.bluecross.messenger.store.entity.content.*
 import idk.bluecross.messenger.util.spring.Beans
@@ -26,13 +26,13 @@ class JacksonContentModule : SimpleModule() {
 
     class ContentSerializer : StdSerializer<Content>(Content::class.java) {
         override fun serialize(value: Content, gen: JsonGenerator?, provider: SerializerProvider?) {
-            gen?.writeObject(ContentDao(value.type, value.getContent()))
+            gen?.writeObject(ContentDto(value.type, value.getContent()))
         }
     }
 
     class ContentDeserializer : StdDeserializer<Content>(Content::class.java) {
         override fun deserialize(p: JsonParser, ctxt: DeserializationContext?): Content =
-            with(p.codec.readValue(p, ContentDao::class.java)) {
+            with(p.codec.readValue(p, ContentDto::class.java)) {
                 fun getFileInDb(): FileInDb {
                     val content = content as HashMap<String, String>
                     return FileInDb(

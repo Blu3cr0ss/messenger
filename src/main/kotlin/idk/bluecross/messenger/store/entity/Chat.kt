@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
 class Chat(
-    var messages: ArrayList<Message>,
+    var messages: List<Message>,
     var name: String,
     var description: String,
     @DBRef

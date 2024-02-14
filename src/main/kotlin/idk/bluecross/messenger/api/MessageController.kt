@@ -3,9 +3,12 @@ package idk.bluecross.messenger.api
 import idk.bluecross.messenger.service.ChatService
 import idk.bluecross.messenger.service.UserService
 import idk.bluecross.messenger.store.dto.MessageDto
+import idk.bluecross.messenger.store.entity.IdRef
 import idk.bluecross.messenger.store.entity.Message
 import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.net.http.HttpResponse
 import kotlin.jvm.optionals.getOrNull
 
 @RestController
@@ -32,9 +36,9 @@ class MessageController(
         message: MessageDto,
         @DestinationVariable("id") chatId: String,
         @AuthenticationPrincipal principal: UsernamePasswordAuthenticationToken
-    ): Message {
+    ): Any {
         val msg = Message(
-            userService.findUserByUsername(principal.name),
+            IdRef.fromEntity(userService.findUserByUsername(principal.name).also(::println)),
             listOf(),
             message.contentTree,
             Message.State.SENT

@@ -26,11 +26,16 @@ class ChatDao(
     fun findById(id: ObjectId) = chatRepository.findById(id)
 
     fun saveMessage(chatId: ObjectId, message: Message) {
+        mongoTemplate.findAll(Chat::class.java).map(Chat::id).also(::println)
+        mongoTemplate.findById(chatId,Chat::class.java).also(::println)
+
         mongoTemplate.updateFirst(
             Query(Criteria("_id").`is`(chatId)),
             Update().addToSet("messages", message),
             Chat::class.java
-        )
+        ).also {
+            println(it.modifiedCount)
+        }
     }
 
     fun saveChat(name: String, description: String, userIds: List<ObjectId>) {

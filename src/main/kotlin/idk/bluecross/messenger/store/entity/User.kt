@@ -24,10 +24,6 @@ class User(
     @Id
     override var id = ObjectId()
 
-    init {
-        userDetails.id = this.id
-    }
-
     @Transient
     var avatar = GraphicContent(avatarFile)
 

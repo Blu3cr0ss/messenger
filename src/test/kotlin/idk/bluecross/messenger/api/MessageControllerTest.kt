@@ -21,7 +21,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(locations = ["classpath:test-db.properties"])
+//@TestPropertySource(locations = ["classpath:test-db.properties"])
 @AutoConfigureMockMvc
 class MessageControllerTest(
     @Autowired var stompClient: WebSocketStompClient,
@@ -33,24 +33,18 @@ class MessageControllerTest(
 
     @Test
     fun sendMessage() {
+        val chatId = "659d2754105ae36c2f4f4566"
         val url = "ws://localhost:$port/api/ws"
         stompClient.connectAsync(
             url,
             WebSocketHttpHeaders().apply { setBearerAuth(authenticate(port)) },
             defaultSessionHandler(),
         ).get().apply {
-            subscribe(
-                "/topic/chat/6574ac1a5dd5341a52414029/messages",
-                subscription<Message>(Message::class.java) { h, p ->
-                    println("message: $p")
-                })
-
             send(
-                "/chat/6574ac1a5dd5341a52414029/messages/send",
+                "/chat/$chatId/messages/send",
                 MessageDto(
                     ContentTree(
-                        TextContent(UUID.randomUUID().toString()),
-                        FileContent(FileInDb("", byteArrayOf(1)))
+                        TextContent("Здравствуй, Вася!"),
                     ),
                 )
             )

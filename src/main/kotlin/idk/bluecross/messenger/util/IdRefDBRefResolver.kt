@@ -5,8 +5,10 @@ import idk.bluecross.messenger.store.entity.IdRef
 import idk.bluecross.messenger.store.entity.IdRefList
 import idk.bluecross.messenger.util.clazz.isSubtypeOf
 import org.bson.Document
+import org.bson.conversions.Bson
 import org.springframework.data.mongodb.core.convert.*
 import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty
+import org.springframework.data.mongodb.util.BsonUtils
 
 class IdRefDBRefResolver(var defaultDBRefResolver: DbRefResolver) : DbRefResolver {
     override fun resolveReference(
@@ -24,7 +26,6 @@ class IdRefDBRefResolver(var defaultDBRefResolver: DbRefResolver) : DbRefResolve
     ): Any? {
         return if (property.rawType.isSubtypeOf(IdRef::class.java)) {
             IdRefUtils.resolveIdRef(property, callback)
-            defaultDBRefResolver.resolveDbRef(property, dbref, callback, proxyHandler)
         } else if (property.rawType.isSubtypeOf(IdRefList::class.java)) {
             IdRefUtils.resolveIdRefList(property, callback)
         } else defaultDBRefResolver.resolveDbRef(property, dbref, callback, proxyHandler)
@@ -35,7 +36,7 @@ class IdRefDBRefResolver(var defaultDBRefResolver: DbRefResolver) : DbRefResolve
             val document = (callback::class.java.getDeclaredField("surroundingObject").apply {
                 isAccessible = true
             }.get(callback) as Document)
-            val value = document[property.name] as List<DBRef>
+            val value = BsonUtils.resolveValue(document as Bson, property.name) as List<DBRef>
             return IdRefList<Any>().apply {
                 addAll(value.map { IdRef.fromDBRef(it) as IdRef<Any> })
             }
@@ -46,7 +47,7 @@ class IdRefDBRefResolver(var defaultDBRefResolver: DbRefResolver) : DbRefResolve
                 (callback::class.java.getDeclaredField("surroundingObject").apply {  // DefaultDbRefResolverCallback
                     isAccessible = true
                 }.get(callback) as Document)
-            val value = document[property.name] as DBRef
+            val value = BsonUtils.resolveValue(document as Bson, property.name) as DBRef
             return IdRef.fromDBRef(value)
         }
     }

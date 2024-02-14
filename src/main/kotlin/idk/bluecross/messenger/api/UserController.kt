@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(val userService: UserService) {
     @GetMapping("/getChats")
     fun getChats(@AuthenticatedUserDetails auth: UserDetails): Any {
-        return userService.getChats(auth.id)
+        return userService.getChatsByAny("userDetails.username", auth.username)
     }
 
 }
