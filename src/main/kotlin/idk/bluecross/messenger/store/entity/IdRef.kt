@@ -22,7 +22,7 @@ class IdRef<T>(
     @set:JvmName(name = "_setDatabaseName")
     var databaseName: String? = null
 )
-//    : DBRef(databaseName, collection, id)
+    : DBRef(databaseName, collection, id)
 {
     companion object {
         private val mongoOperations = Beans.getBean(MongoOperations::class.java)

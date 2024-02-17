@@ -3,15 +3,26 @@ package idk.bluecross.messenger.store.entity
 import com.fasterxml.jackson.annotation.JsonIncludeProperties
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.PersistenceCreator
+import org.springframework.data.annotation.Transient
 import org.springframework.security.core.userdetails.UserDetails
 
-@JsonIncludeProperties("username","displayedName","email","password")
+@JsonIncludeProperties("username", "displayedName", "email", "password")
 data class UserDetails(
     private var username: String,
     var displayedName: String,
     var email: String,
     private var password: String
 ) : UserDetails {
+    lateinit var id: ObjectId
+    @PersistenceCreator
+    constructor(username: String, displayedName: String, email: String, password: String, id: ObjectId) : this(
+        username,
+        displayedName,
+        email,
+        password
+    ) {
+        this.id = id
+    }
 
     override fun getAuthorities() = null
 

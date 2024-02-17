@@ -1,9 +1,7 @@
 package idk.bluecross.messenger.store.dao
 
 import com.mongodb.DBRef
-import idk.bluecross.messenger.store.entity.Chat
-import idk.bluecross.messenger.store.entity.Message
-import idk.bluecross.messenger.store.entity.User
+import idk.bluecross.messenger.store.entity.*
 import idk.bluecross.messenger.store.repository.ChatRepository
 import org.bson.Document
 import org.bson.types.ObjectId
@@ -26,34 +24,23 @@ class ChatDao(
     fun findById(id: ObjectId) = chatRepository.findById(id)
 
     fun saveMessage(chatId: ObjectId, message: Message) {
-        mongoTemplate.findAll(Chat::class.java).map(Chat::id).also(::println)
-        mongoTemplate.findById(chatId,Chat::class.java).also(::println)
-
         mongoTemplate.updateFirst(
             Query(Criteria("_id").`is`(chatId)),
             Update().addToSet("messages", message),
             Chat::class.java
-        ).also {
-            println(it.modifiedCount)
-        }
+        )
     }
 
-    fun saveChat(name: String, description: String, userIds: List<ObjectId>) {
-        val document = Document(
-            mapOf(
-                "messages" to arrayListOf<Message>(),
-                "name" to name,
-                "description" to description,
-                "members" to userIds.map { DBRef("user", it) },
-                "_id" to ObjectId(),
-                "_class" to Chat::class.java.name
-            )
-        )
-
-        mongoTemplate.save(document, "chat")
+    fun saveChat(name: String, description: String, userIds: List<ObjectId>) = Chat(
+        listOf(),
+        name,
+        description,
+        IdRefList<User>().apply { addAll(userIds.map { IdRef(it, User::class.java) }) }
+    ).also {
+        mongoTemplate.save(it)
         mongoTemplate.updateMulti(
             Query(Criteria("_id").`in`(userIds)),
-            Update().addToSet("chats", DBRef("chat", document.getObjectId("_id"))),
+            Update().addToSet("chats", it),
             User::class.java
         )
     }
