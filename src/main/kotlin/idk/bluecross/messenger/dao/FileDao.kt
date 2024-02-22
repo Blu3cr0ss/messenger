@@ -1,6 +1,6 @@
-package idk.bluecross.messenger.store.dao
+package idk.bluecross.messenger.dao
 
-import idk.bluecross.messenger.store.repository.FileRepository
+import idk.bluecross.messenger.repository.FileRepository
 import idk.bluecross.messenger.store.entity.FileInDb
 import org.bson.types.ObjectId
 import org.springframework.stereotype.Component

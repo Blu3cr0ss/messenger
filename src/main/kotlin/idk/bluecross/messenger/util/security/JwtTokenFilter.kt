@@ -1,6 +1,7 @@
 package idk.bluecross.messenger.util.security
 
 import idk.bluecross.messenger.service.AuthService
+import idk.bluecross.messenger.util.getLogger
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -12,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtTokenFilter(
     var authService: AuthService
 ) : OncePerRequestFilter() {
+    val LOGGER = getLogger()
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -23,7 +25,13 @@ class JwtTokenFilter(
                     authService.loginByAuthorizationHeader(request.getHeader("Authorization"))
             }
         }.onFailure {
-            it.printStackTrace()
+            if (LOGGER.isDebugEnabled) LOGGER.debug(
+                "Failed request ${request.requestURI} because of bad authorization ${
+                    request.getHeader(
+                        "Authorization"
+                    )
+                }"
+            )
         }
         filterChain.doFilter(request, response)
     }

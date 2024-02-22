@@ -1,4 +1,4 @@
-package idk.bluecross.messenger.store.repository
+package idk.bluecross.messenger.repository
 
 import idk.bluecross.messenger.store.entity.FileInDb
 import org.bson.types.ObjectId

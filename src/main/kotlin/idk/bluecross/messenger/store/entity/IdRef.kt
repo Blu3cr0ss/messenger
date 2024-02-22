@@ -15,15 +15,10 @@ import java.util.*
 class IdRef<T>(
     val id: ObjectId,
     val clazz: Class<T>,
-//    @Transient
     val collection: String = clazz.simpleName.replaceFirstChar { it.lowercase(Locale.getDefault()) },
-//    @Transient
-    @get:JvmName(name = "_getDatabaseName")
-    @set:JvmName(name = "_setDatabaseName")
-    var databaseName: String? = null
-)
-    : DBRef(databaseName, collection, id)
-{
+//    val collection: String = Beans.getBean(MongoTemplate::class.java).getCollectionName(clazz),
+    var database: String? = null
+) : DBRef(database, collection, id) {
     companion object {
         private val mongoOperations = Beans.getBean(MongoOperations::class.java)
         fun <T : DBEntity> fromEntity(entity: T): IdRef<T> {
@@ -53,4 +48,12 @@ class IdRef<T>(
     override fun toString(): String = "{id=$id, class=$clazz, collection=$collection, database=$databaseName}"
 }
 
-class IdRefList<T> : ArrayList<IdRef<T>>()
+class IdRefList<T>() : ArrayList<IdRef<T>>() {
+    constructor(vararg items: IdRef<T>) : this() {
+        addAll(items)
+    }
+
+    constructor(items: Collection<IdRef<T>>) : this() {
+        addAll(items)
+    }
+}

@@ -31,13 +31,11 @@ class CascadeSaveEventListener(
                     if (v::class.java.isSubtypeOf(Iterable::class.java)) {
                         return@run (v as Iterable<Any>).toList()
                     } else return@run listOf(v)
+                }.run {
+                    if (this.isNotEmpty() && this[0]::class.java.isSubtypeOf(IdRef::class.java))
+                        map { (it as IdRef<*>).get() }
+                    else this
                 }
-
-                    .run {
-                        if (this.isNotEmpty() && this[0]::class.java.isSubtypeOf(IdRef::class.java))
-                            map { (it as IdRef<*>).get() }
-                        else this
-                    }
 
                     .filterNotNull()
 

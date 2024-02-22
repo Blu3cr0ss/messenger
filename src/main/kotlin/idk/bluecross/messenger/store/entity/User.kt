@@ -1,7 +1,9 @@
 package idk.bluecross.messenger.store.entity
 
+import idk.bluecross.messenger.repository.FileRepository
 import idk.bluecross.messenger.store.entity.content.GraphicContent
 import idk.bluecross.messenger.util.annotation.CascadeSave
+import idk.bluecross.messenger.util.spring.Beans
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Transient
@@ -38,7 +40,8 @@ class User(
     }
 
     companion object {
-        val DEFAULT_AVATAR_FILE =
-            FileInDb("defaultAvatar", byteArrayOf(1)).apply { id = ObjectId("6566fa53ee30b040e65e1a3d") }
+        val DEFAULT_AVATAR_FILE by lazy {
+            Beans.getBean(FileRepository::class.java).findById(ObjectId("6566fa53ee30b040e65e1a3d")).get()
+        }
     }
 }

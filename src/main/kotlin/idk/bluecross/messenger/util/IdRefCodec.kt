@@ -9,6 +9,7 @@ import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
 
 class IdRefCodec : Codec<IdRef<*>> {
+    val LOGGER = getLogger()
     override fun encode(
         writer: BsonWriter,
         value: idk.bluecross.messenger.store.entity.IdRef<*>,
@@ -30,7 +31,9 @@ class IdRefCodec : Codec<IdRef<*>> {
     override fun decode(
         reader: BsonReader,
         decoderContext: DecoderContext
-    ): idk.bluecross.messenger.store.entity.IdRef<*> {
+    ): IdRef<*> {
+//        throw UnsupportedOperationException("IdRefCodec does not support decoding")
+        if (LOGGER.isWarnEnabled) LOGGER.warn("Poorly tested code in IdRefCodec.decode()")
         reader.readStartDocument()
         val collection = reader.readString()
         val id = reader.readObjectId()

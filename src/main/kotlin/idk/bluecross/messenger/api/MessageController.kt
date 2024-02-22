@@ -6,11 +6,8 @@ import idk.bluecross.messenger.store.dto.GetMessageDto
 import idk.bluecross.messenger.store.dto.MessageDto
 import idk.bluecross.messenger.store.entity.IdRef
 import idk.bluecross.messenger.store.entity.Message
-import idk.bluecross.messenger.store.entity.content.ContentTree
 import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.net.http.HttpResponse
 import kotlin.jvm.optionals.getOrNull
 
 @RestController
@@ -40,7 +36,7 @@ class MessageController(
         @AuthenticationPrincipal principal: UsernamePasswordAuthenticationToken
     ): Any {
         val msg = Message(
-            IdRef.fromEntity(userService.findUserByUsername(principal.name)),
+            IdRef.fromEntity(userService.findUserByUsername(principal.name).get()),
             listOf(),
             dto.text,
             dto.attachments,

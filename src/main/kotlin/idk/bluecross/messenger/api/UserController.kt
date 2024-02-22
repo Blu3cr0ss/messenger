@@ -22,7 +22,10 @@ class UserController(val userService: UserService) {
 
     @GetMapping("/getChatsSimple")
     fun getChatsSimple(@AuthenticatedUserDetails auth: UserDetails): Any {
-        return getChats(auth).map { GetChatDto(it.id.toHexString(), it.name) }
+        return getChats(auth).map { GetChatDto(it.id.toHexString(), it.name, it.description) }
     }
+
+    @GetMapping("/getAvatarByUsername")
+    fun getAvatarByUsername(username: String) = userService.getAvatarByUsername(username)
 
 }
