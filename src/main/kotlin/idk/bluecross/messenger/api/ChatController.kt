@@ -2,7 +2,7 @@ package idk.bluecross.messenger.api
 
 import idk.bluecross.messenger.service.ChatService
 import idk.bluecross.messenger.store.dto.CreateChatDto
-import idk.bluecross.messenger.store.dto.SimpleUserDataDto
+import idk.bluecross.messenger.store.dto.FullUserDataDto
 import idk.bluecross.messenger.store.entity.UserDetails
 import idk.bluecross.messenger.util.annotation.AuthenticatedUserDetails
 import org.bson.types.ObjectId
@@ -33,5 +33,11 @@ class ChatController(
 
     @GetMapping("/{chatId}/getMembers")
     fun getMembers(@PathVariable chatId: String) = chatService.getMembers(ObjectId(chatId))
-        .map { SimpleUserDataDto(it.userDetails.displayedName, it.avatar.image.byteArr) }
+        .map {
+            FullUserDataDto(
+                it.userDetails.displayedName,
+                it.userDetails.username,
+                it.userDetails.bio, it.avatar.byteArr
+            )
+        }
 }

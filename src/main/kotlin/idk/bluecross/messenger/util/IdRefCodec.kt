@@ -33,7 +33,7 @@ class IdRefCodec : Codec<IdRef<*>> {
         decoderContext: DecoderContext
     ): IdRef<*> {
 //        throw UnsupportedOperationException("IdRefCodec does not support decoding")
-        if (LOGGER.isWarnEnabled) LOGGER.warn("Poorly tested code in IdRefCodec.decode()")
+//        if (LOGGER.isWarnEnabled) LOGGER.warn("Poorly tested code in IdRefCodec.decode()")
         reader.readStartDocument()
         val collection = reader.readString()
         val id = reader.readObjectId()

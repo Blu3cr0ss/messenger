@@ -7,6 +7,7 @@ import idk.bluecross.messenger.store.dto.RegisterDto
 import idk.bluecross.messenger.store.entity.IdRefList
 import idk.bluecross.messenger.store.entity.User
 import idk.bluecross.messenger.store.entity.UserDetails
+import idk.bluecross.messenger.util.getLogger
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,37 +27,33 @@ class AuthController(
     var encoder: PasswordEncoder,
     var authenticationManager: AuthenticationManager
 ) {
+    val LOGGER = getLogger()
 
     @PostMapping("/register")
-    fun register(req: RegisterDto): ResponseEntity<String> {
-        if (userService.emailExists(req.email)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Указаный email уже зарегистрирован")
-        } else if (userService.usernameExists(req.username)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Указаный username уже зарегистрирован")
-        } else {
-            val user = User(
-                "",
+    fun register(req: RegisterDto) = runCatching {
+        userService.registerUser(
+            User(
                 User.DEFAULT_AVATAR_FILE,
                 User.Status.OFFLINE,
                 IdRefList(),
-                UserDetails(req.username, req.username, req.email, encoder.encode(req.password))
+                UserDetails(req.username, req.username, req.email, encoder.encode(req.password), "")
             )
-            userService.save(user)
-            return ResponseEntity.status(HttpStatus.OK).body("Успешно")
-        }
-    }
+        )
+    }.recover {
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(it.message)
+    }.getOrNull()!!
+
 
     @PostMapping("/login")
-    fun login(req: LoginDto, httpServletRequest: HttpServletRequest): ResponseEntity<String> {
-        return try {
-            val auth =
-                authenticationManager.authenticate(UsernamePasswordAuthenticationToken(req.username, req.password))
-            SecurityContextHolder.getContext().authentication = auth
-            val jwt = jwtService.generateToken(auth, httpServletRequest.remoteAddr)
-            ResponseEntity.status(HttpStatus.OK).body(jwt)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ошибка авторизации")
-        }
-    }
+    fun login(req: LoginDto, httpServletRequest: HttpServletRequest) = runCatching {
+        val auth =
+            authenticationManager.authenticate(UsernamePasswordAuthenticationToken(req.username, req.password))
+        SecurityContextHolder.getContext().authentication = auth
+        val jwt = jwtService.generateToken(auth, httpServletRequest.remoteAddr)
+        ResponseEntity.status(HttpStatus.OK).body(jwt)
+    }.recover {
+        if (LOGGER.isDebugEnabled) LOGGER.debug("Unauthorized ${req.username} with ${req.password}")
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ошибка авторизации")
+    }.getOrNull()!!
+
 }

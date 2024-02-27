@@ -22,12 +22,11 @@ class UserServiceTest(
 
         userService.save(
             User(
-                "",
                 FileInDb("", byteArrayOf(1)),
                 User.Status.OFFLINE,
                 IdRefList(),
                 UserDetails(
-                    username, "Bebrik", "qwe@qwe.qwe", "now give me your password"
+                    username, "Bebrik", "qwe@qwe.qwe", "now give me your password", ""
                 )
             )
         )

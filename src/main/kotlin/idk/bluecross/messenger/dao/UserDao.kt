@@ -93,12 +93,34 @@ class UserDao(
 
     fun getAvatarByUsername(username: String) = (mongoTemplate.findDistinct(
         Query(Criteria("userDetails.username").`is`(username)),
-        "avatarFile",
+        "avatar",
         User::class.java,
         IdRef::class.java
     )[0] as IdRef<FileInDb>).get()!!.byteArr
-//    fun existsByUsername(username:String) = mongoTemplate.exists(
-//        Query(Criteria("userDetails.username").`is`(username)),
-//        User::class.java
-//    )
+
+    fun setUsername(userId: Any, username: String) = mongoTemplate.updateFirst(
+        Query(Criteria("_id").`is`(userId)),
+        Update().set("userDetails.username", username),
+        User::class.java
+    )
+
+
+    fun setDisplayedName(userId: Any, displayedName: String) = mongoTemplate.updateFirst(
+        Query(Criteria("_id").`is`(userId)),
+        Update().set("userDetails.displayedName", displayedName),
+        User::class.java
+    )
+
+    fun setBio(userId: Any, bio: String) = mongoTemplate.updateFirst(
+        Query(Criteria("_id").`is`(userId)),
+        Update().set("userDetails.bio", bio),
+        User::class.java
+    )
+
+    fun setAvatar(userId: Any, avatar: ByteArray) = mongoTemplate.updateFirst(
+        Query(Criteria("_id").`is`(userId)),
+        Update().set("avatar", mongoTemplate.save(FileInDb((userId as ObjectId).toHexString() + "_avatar", avatar))),
+        User::class.java
+    )
+
 }
