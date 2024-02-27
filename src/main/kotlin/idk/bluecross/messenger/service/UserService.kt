@@ -77,8 +77,7 @@ class UserService(
         if (bio != null) {
             setBio(userId, bio)
         }
-        if (avatar != null) {
-            val img = ImageIO.read(avatar.inputStream())
+        if (avatar != null) ImageIO.read(avatar.inputStream())?.let { img ->
             val maxDimensions = 128
             if (img.width == img.height && img.width <= maxDimensions)
                 setAvatar(userId, avatar)
