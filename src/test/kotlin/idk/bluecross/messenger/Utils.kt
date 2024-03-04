@@ -45,7 +45,7 @@ fun defaultSessionHandler() =
 fun authenticate(
     port: Int
 ): String = Beans.getBean(MockMvc::class.java).post(
-    "http://localhost:$port/api/auth/login?username=bluecross_alt&password=QQQqqq999",
+    "http://localhost:$port/api/auth/login?username=bluecross&password=QQQqqq999",
 ).andReturn().response.run {
     if (status !in 200..299) throw RuntimeException("Bad response status")
     else this.contentAsString

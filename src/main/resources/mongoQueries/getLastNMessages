@@ -1,0 +1,17 @@
+{[
+  {
+    $match: {
+      _id: ObjectId("#chatId")
+    }
+  },
+  {
+    $project: {
+      messages: {
+        "$lastN": {
+          "n": #n,
+          "input": "$messages"
+        }
+      }
+    }
+  }
+]}

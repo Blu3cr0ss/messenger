@@ -17,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import kotlin.jvm.optionals.getOrNull
 
@@ -54,15 +55,35 @@ class MessageController(
 
     @GetMapping("/get") // `/messages`
     fun messages(@PathVariable("id") chatId: String) =
-        chatService.find(ObjectId(chatId)).getOrNull()?.messages?.map { msg ->
+        chatService.getMessages(ObjectId(chatId)).map { msg ->
             GetMessageDto(
                 msg.sender.id.toHexString(),
-                msg.sender.also(::println).get()!!.userDetails.displayedName,
+                msg.sender.get()!!.userDetails.displayedName,
                 msg.text,
                 msg.attachments
             )
         }
-            ?: ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Chat id not found")
+
+    @GetMapping("/getLast")
+    fun getLastMessages(@RequestParam count: Int, @PathVariable("id") chatId: String) =
+        chatService.getLastNMessages(ObjectId(chatId), count).map { msg ->
+            GetMessageDto(
+                msg.sender.id.toHexString(),
+                msg.sender.get()!!.userDetails.displayedName,
+                msg.text,
+                msg.attachments
+            )
+        }
+
+    @GetMapping("/getInRange")
+    fun getMessagesInRange(@RequestParam from: Int, @RequestParam to: Int, @PathVariable("id") chatId: String) =
+        chatService.getMessagesInRange(ObjectId(chatId), from, to).map { msg ->
+            GetMessageDto(
+                msg.sender.id.toHexString(),
+                msg.sender.get()!!.userDetails.displayedName,
+                msg.text,
+                msg.attachments
+            )
+        }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.web.socket.WebSocketHttpHeaders
 import org.springframework.web.socket.messaging.WebSocketStompClient
+import java.util.UUID
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 //@TestPropertySource(locations = ["classpath:test-db.properties"])
@@ -25,21 +26,21 @@ class MessageControllerTest(
 
     @Test
     fun sendMessage() {
-        val chatId = "659d2754105ae36c2f4f4566"
+        val chatId = "65e4082f5301bb20e89d857b"
         val url = "ws://localhost:$port/api/ws"
         stompClient.connectAsync(
             url,
             WebSocketHttpHeaders().apply { setBearerAuth(authenticate(port)) },
             defaultSessionHandler(),
-        ).get().apply {
-            send(
+        ).join().apply {
+            for (i in 0..100) send(
                 "/chat/$chatId/messages/send",
                 MessageDto(
-                    "Привет Вася",
+                    UUID.randomUUID().toString(),
                     null
                 )
             )
-            Thread.sleep(1000)
         }
+        Thread.sleep(3000)
     }
 }

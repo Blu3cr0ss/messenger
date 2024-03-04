@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     var jwtService: JwtService,
     var userService: UserService,
-    var encoder: PasswordEncoder,
     var authenticationManager: AuthenticationManager
 ) {
     val LOGGER = getLogger()
@@ -36,7 +35,7 @@ class AuthController(
                 User.DEFAULT_AVATAR_FILE,
                 User.Status.OFFLINE,
                 IdRefList(),
-                UserDetails(req.username, req.username, req.email, encoder.encode(req.password), "")
+                UserDetails(req.username, req.username, req.email, req.password, "")
             )
         )
     }.recover {

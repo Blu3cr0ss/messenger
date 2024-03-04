@@ -7,6 +7,10 @@ import org.springframework.core.KotlinDetector
 
 class SomeRandomTests {
     @Test
+    fun calc() {
+        println(10175 / 200)
+    }
+    @Test
     fun clazzSaving() {
         val q = "qwe"
         val w = q as Any

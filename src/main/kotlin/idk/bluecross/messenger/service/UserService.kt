@@ -1,14 +1,17 @@
 package idk.bluecross.messenger.service
 
 import idk.bluecross.messenger.dao.ChatDao
+import idk.bluecross.messenger.dao.RedisUserDetailsDao
 import idk.bluecross.messenger.dao.UserDao
 import idk.bluecross.messenger.store.entity.User
+import idk.bluecross.messenger.store.entity.UserDetails
 import idk.bluecross.messenger.store.exception.BadAvatarException
 import idk.bluecross.messenger.store.exception.BadCredentialsException
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import javax.imageio.ImageIO
 
@@ -16,13 +19,15 @@ import javax.imageio.ImageIO
 class UserService(
     val userDao: UserDao,
     val chatDao: ChatDao,
-    val mongoTemplate: MongoTemplate
+    val mongoTemplate: MongoTemplate,
+    var encoder: PasswordEncoder,
+    var redisUserDetailsDao: RedisUserDetailsDao
 ) : UserDetailsService {
     fun isCorrectUsername(username: String) =
-        Regex("^[a-zA-Z0-9._-]{3,}$").matches(username) // Any latin letter, any number and ._-
+        Regex("^[a-zA-Z0-9._-]{4,16}$").matches(username) // Any latin letter, any number and ._-
 
     fun isCorrectPassword(password: String) = Regex(
-        "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]){4,}$" // must have numbers, upper and lowercase latin letters and be at least 4 symbols long
+        "^.{4,16}$" // can have numbers, upper and lowercase latin letters and be at least 4 symbols long
     ).matches(password)
 
     fun isCorrectEmail(email: String) =
@@ -34,20 +39,24 @@ class UserService(
     fun save(user: User) = userDao.save(user)
     fun find(id: ObjectId) = userDao.findById(id)
     fun registerUser(user: User): User? {
-        if (!isCorrectUsername(user.userDetails.username)) throw BadCredentialsException("Username incorrect")
-        if (!isCorrectPassword(user.userDetails.password)) throw BadCredentialsException("Password incorrect")
-        if (!isCorrectEmail(user.userDetails.email)) throw BadCredentialsException("Email incorrect")
+        if (!isCorrectEmail(user.userDetails.email)) throw BadCredentialsException("Invalid email")
+        if (!isCorrectUsername(user.userDetails.username)) throw BadCredentialsException("Invalid username. Allowed symbols: Latin letters, numbers and ._-. Allowed length: 4-16 symbols")
+        if (!isCorrectPassword(user.userDetails.password)) throw BadCredentialsException("Invalid password. Allowed length: 4-16 symbols")
         if (usernameExists(user.userDetails.username)) throw BadCredentialsException("Username exists")
         if (emailExists(user.userDetails.email)) throw BadCredentialsException("Email exists")
-        return save(user)
+        return save(user.apply { userDetails.password = encoder.encode(userDetails.password) })
     }
 
     fun emailExists(email: String) = userDao.existsByEmail(email)
     fun usernameExists(username: String) = userDao.existsByUsername(username)
 
     @Throws(UsernameNotFoundException::class)
-    override fun loadUserByUsername(username: String): idk.bluecross.messenger.store.entity.UserDetails =
-        userDao.findUserDetailsByUsername(username)[0]
+    override fun loadUserByUsername(username: String): UserDetails =
+        userDao.findUserDetailsByUsername(username)
+
+    fun loadUserByUsernameWithRedis(username: String) =
+        redisUserDetailsDao.get(username) ?: loadUserByUsername(username).also { redisUserDetailsDao.set(it) }
+
 
     fun findUserByUsername(username: String) = userDao.findByUsername(username)
 
@@ -68,8 +77,8 @@ class UserService(
         bio: String?,
         avatar: ByteArray?
     ) {
-        if (username != null && !usernameExists(username) && isCorrectUsername(username)) {
-            setUsername(userId, username)
+        if (username != null) {
+            if (!usernameExists(username) && isCorrectUsername(username)) setUsername(userId, username)
         }
         if (displayedName != null) {
             setDisplayedName(userId, displayedName)

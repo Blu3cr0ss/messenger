@@ -1,5 +1,6 @@
 package idk.bluecross.messenger.store.entity
 
+import idk.bluecross.messenger.dao.FileDao
 import idk.bluecross.messenger.repository.FileRepository
 import idk.bluecross.messenger.util.annotation.CascadeSave
 import idk.bluecross.messenger.util.spring.Beans
@@ -35,7 +36,7 @@ class User(
 
     companion object {
         val DEFAULT_AVATAR_FILE by lazy {
-            Beans.getBean(FileRepository::class.java).findById(ObjectId("6566fa53ee30b040e65e1a3d")).get()
+            Beans.getBean(FileDao::class.java).findById(ObjectId("6566fa53ee30b040e65e1a3d")).get()
         }
     }
 }

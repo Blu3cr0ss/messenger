@@ -3,15 +3,17 @@ package idk.bluecross.messenger.store.entity
 import com.fasterxml.jackson.annotation.JsonIncludeProperties
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.PersistenceCreator
+import org.springframework.data.redis.core.RedisHash
 import org.springframework.security.core.userdetails.UserDetails
 
+@RedisHash
 @JsonIncludeProperties("username", "displayedName", "email", "password")
 data class UserDetails(
     private var username: String,
     var displayedName: String,
     var email: String,
     private var password: String,
-    var bio: String
+    var bio: String = ""
 ) : UserDetails {
     lateinit var id: ObjectId
 
@@ -36,6 +38,9 @@ data class UserDetails(
     override fun getAuthorities() = null
 
     override fun getPassword() = password
+    fun setPassword(password: String) {
+        this.password = password
+    }
 
     override fun getUsername() = username
 

@@ -61,5 +61,8 @@ class ChatService(
     }
 
     fun getMembers(chatId: Any) = chatDao.getMembers(chatId)
+    fun getLastNMessages(chatId: Any, n: Int) = messageDao.getLastMessages(chatId, n)
+    fun getMessages(chatId: Any) = messageDao.getMessages(chatId)
+    fun getMessagesInRange(chatId: Any, from: Int, to: Int) = messageDao.getMessagesInRange(chatId, from, to)
 
 }

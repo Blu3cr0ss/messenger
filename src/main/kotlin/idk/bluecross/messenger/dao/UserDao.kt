@@ -3,6 +3,7 @@ package idk.bluecross.messenger.dao
 import com.mongodb.DBRef
 import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
+import com.mongodb.client.result.UpdateResult
 import idk.bluecross.messenger.repository.UserRepository
 import idk.bluecross.messenger.store.entity.*
 import idk.bluecross.messenger.util.getLogger
@@ -19,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class UserDao(
     val userRepository: UserRepository,
-    val mongoTemplate: MongoTemplate
+    val mongoTemplate: MongoTemplate,
+    val fileDao: FileDao,
+    val redisUserDetailsDao: RedisUserDetailsDao
 ) : UserRepository by userRepository {
     val LOGGER = getLogger()
 
@@ -43,7 +46,7 @@ class UserDao(
         "userDetails",
         User::class.java,
         UserDetails::class.java
-    )
+    )[0]
 
 
     fun getChats(id: Any) = mongoTemplate.findDistinct(
@@ -98,29 +101,52 @@ class UserDao(
         IdRef::class.java
     )[0] as IdRef<FileInDb>).get()!!.byteArr
 
-    fun setUsername(userId: Any, username: String) = mongoTemplate.updateFirst(
-        Query(Criteria("_id").`is`(userId)),
-        Update().set("userDetails.username", username),
-        User::class.java
-    )
+    fun setUsername(userId: Any, username: String) = changeUserDetails(userId) {
+        mongoTemplate.updateFirst(
+            Query(Criteria("_id").`is`(userId)),
+            Update().set("userDetails.username", username),
+            User::class.java
+        )
+    }
 
 
-    fun setDisplayedName(userId: Any, displayedName: String) = mongoTemplate.updateFirst(
-        Query(Criteria("_id").`is`(userId)),
-        Update().set("userDetails.displayedName", displayedName),
-        User::class.java
-    )
+    fun setDisplayedName(userId: Any, displayedName: String) = changeUserDetails(userId) {
+        mongoTemplate.updateFirst(
+            Query(Criteria("_id").`is`(userId)),
+            Update().set("userDetails.displayedName", displayedName),
+            User::class.java
+        )
+    }
 
-    fun setBio(userId: Any, bio: String) = mongoTemplate.updateFirst(
-        Query(Criteria("_id").`is`(userId)),
-        Update().set("userDetails.bio", bio),
-        User::class.java
-    )
+    fun setBio(userId: Any, bio: String) = changeUserDetails(userId) {
+        mongoTemplate.updateFirst(
+            Query(Criteria("_id").`is`(userId)),
+            Update().set("userDetails.bio", bio),
+            User::class.java
+        )
+    }
 
-    fun setAvatar(userId: Any, avatar: ByteArray) = mongoTemplate.updateFirst(
-        Query(Criteria("_id").`is`(userId)),
-        Update().set("avatar", mongoTemplate.save(FileInDb((userId as ObjectId).toHexString() + "_avatar", avatar))),
-        User::class.java
-    )
+    fun setAvatar(userId: Any, avatar: ByteArray) = changeUserDetails(userId) {
+        val avatar = fileDao.save(FileInDb((userId as ObjectId).toHexString() + "_avatar", avatar))
+        mongoTemplate.updateFirst(
+            Query(Criteria("_id").`is`(userId)),
+            Update().set("avatar", avatar),
+            User::class.java
+        )
+    }
+
+
+    private fun changeUserDetails(userId: Any, task: () -> UpdateResult): UpdateResult {
+        return task.invoke().also {
+            redisUserDetailsDao.set(
+                mongoTemplate.findDistinct(
+                    Query(Criteria("_id").`is`(userId)),
+                    "userDetails",
+                    User::class.java,
+                    UserDetails::class.java
+                )[0]
+            )
+        }
+    }
 
 }

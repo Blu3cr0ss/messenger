@@ -1,3 +1,5 @@
 package idk.bluecross.messenger.store.exception
 
-class BadCredentialsException(message: String) : Exception(message)
+import org.springframework.security.authentication.BadCredentialsException
+
+class BadCredentialsException(message: String) : BadCredentialsException(message)

@@ -7,36 +7,36 @@ import org.bson.BsonWriter
 import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
+import org.bson.types.ObjectId
 
 class IdRefCodec : Codec<IdRef<*>> {
     val LOGGER = getLogger()
     override fun encode(
         writer: BsonWriter,
-        value: idk.bluecross.messenger.store.entity.IdRef<*>,
+        value: IdRef<*>,
         encoderContext: EncoderContext?
     ) {
         writer.writeStartDocument()
         writer.writeString("\$ref", value.collection)
-        writer.writeString("\$id", value.id.toHexString())
+        writer.writeObjectId("\$id", value.id)
         if (value.databaseName != null) {
             writer.writeString("\$db", value.databaseName)
         }
         writer.writeEndDocument()
     }
 
-    override fun getEncoderClass(): Class<idk.bluecross.messenger.store.entity.IdRef<*>> {
-        return idk.bluecross.messenger.store.entity.IdRef::class.java
+    override fun getEncoderClass(): Class<IdRef<*>> {
+        return IdRef::class.java
     }
 
     override fun decode(
         reader: BsonReader,
         decoderContext: DecoderContext
     ): IdRef<*> {
-//        throw UnsupportedOperationException("IdRefCodec does not support decoding")
-//        if (LOGGER.isWarnEnabled) LOGGER.warn("Poorly tested code in IdRefCodec.decode()")
+        if (LOGGER.isWarnEnabled) LOGGER.warn("IdRefCodec decode method shouldn't be used")
         reader.readStartDocument()
         val collection = reader.readString()
-        val id = reader.readObjectId()
+        val id = ObjectId(reader.readString())
         reader.readEndDocument()
         val clazz = getClassFromCollectionName(collection)
             ?: throw RuntimeException("IdRefCodec cant find class for collection $collection")
