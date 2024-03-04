@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -38,9 +37,10 @@ class AuthController(
                 UserDetails(req.username, req.username, req.email, req.password, "")
             )
         )
+        ResponseEntity.status(HttpStatus.OK).body("Success")
     }.recover {
         ResponseEntity.status(HttpStatus.BAD_REQUEST).body(it.message)
-    }.getOrNull()!!
+    }
 
 
     @PostMapping("/login")
