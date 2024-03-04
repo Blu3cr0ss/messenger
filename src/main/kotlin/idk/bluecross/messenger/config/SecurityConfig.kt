@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
@@ -30,9 +29,7 @@ class SecurityConfig(
     @Bean
     fun authManagerBuilder(authManagerBuilder: AuthenticationManagerBuilder, passwordEncoder: BCryptPasswordEncoder) =
         authManagerBuilder.also {
-            it
-                .userDetailsService(userService)
-                .passwordEncoder(passwordEncoder)
+            it.userDetailsService(userService).passwordEncoder(passwordEncoder)
         }
 
     @Bean
@@ -43,13 +40,13 @@ class SecurityConfig(
             it.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
         }
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-        .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
         .authorizeHttpRequests {
             it
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/**").fullyAuthenticated()
                 .anyRequest().permitAll()
         }
+        .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
         .build()
 }
 

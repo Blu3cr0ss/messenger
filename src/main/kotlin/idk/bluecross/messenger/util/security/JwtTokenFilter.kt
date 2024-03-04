@@ -1,6 +1,5 @@
 package idk.bluecross.messenger.util.security
 
-import idk.bluecross.messenger.dao.RedisUserDetailsDao
 import idk.bluecross.messenger.service.AuthService
 import idk.bluecross.messenger.service.JwtService
 import idk.bluecross.messenger.util.getLogger
@@ -9,15 +8,17 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.web.util.matcher.AndRequestMatcher
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtTokenFilter(
     var authService: AuthService,
-    var jwtService: JwtService,
+    var jwtService: JwtService
 ) : OncePerRequestFilter() {
     val LOGGER = getLogger()
     override fun doFilterInternal(
@@ -40,4 +41,9 @@ class JwtTokenFilter(
         }
         filterChain.doFilter(request, response)
     }
+
+    override fun shouldNotFilter(request: HttpServletRequest) = !AndRequestMatcher(
+        AntPathRequestMatcher("/api/**"),
+        NegatedRequestMatcher(AntPathRequestMatcher("/api/auth/**"))
+    ).matches(request)  // Filter only /api/** but not /api/auth/**
 }
