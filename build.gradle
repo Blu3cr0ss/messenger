@@ -49,6 +49,6 @@ tasks.withType(JavaExec) {
     println(System.getProperty("DEBUG", 'false'))
     if (System.getProperty('DEBUG', 'false') == 'true') {
         println("DEBUG ENABLED")
-        jvmArgs '-Xdebug', "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=localhost:5005"
+        jvmArgs '-Xdebug', "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
     } else println("DEBUG DISABLED")
 }
