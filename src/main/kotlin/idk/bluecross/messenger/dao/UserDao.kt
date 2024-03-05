@@ -149,6 +149,6 @@ class UserDao(
         }
     }
 
-    override fun <S : User?> save(entity: S): S = save(entity).also { changeUserDetails(entity!!.id) {} }
+    override fun <S : User> save(entity: S): S = userRepository.save(entity).also { changeUserDetails(entity.id) {} }
 
 }
