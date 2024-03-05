@@ -46,7 +46,9 @@ test {
     useJUnitPlatform()
 }
 tasks.withType(JavaExec) {
+    println(System.getProperty("DEBUG", 'false'))
     if (System.getProperty('DEBUG', 'false') == 'true') {
+        println("DEBUG ENABLED")
         jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
-    }
+    } else println("DEBUG DISABLED")
 }
