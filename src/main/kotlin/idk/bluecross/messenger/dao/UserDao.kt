@@ -136,7 +136,7 @@ class UserDao(
     }
 
 
-    private fun changeUserDetails(userId: Any, task: () -> UpdateResult): UpdateResult {
+    private fun <T> changeUserDetails(userId: Any, task: () -> T): T {
         return task.invoke().also {
             redisUserDetailsDao.set(
                 mongoTemplate.findDistinct(
@@ -148,5 +148,7 @@ class UserDao(
             )
         }
     }
+
+    override fun <S : User?> save(entity: S): S = save(entity).also { changeUserDetails(entity!!.id) {} }
 
 }

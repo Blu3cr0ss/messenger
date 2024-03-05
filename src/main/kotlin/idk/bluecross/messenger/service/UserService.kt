@@ -44,7 +44,7 @@ class UserService(
         if (!isCorrectPassword(user.userDetails.password)) throw BadCredentialsException("Invalid password. Allowed length: 4-16 symbols")
         if (usernameExists(user.userDetails.username)) throw BadCredentialsException("Username exists")
         if (emailExists(user.userDetails.email)) throw BadCredentialsException("Email exists")
-        return save(user.apply { userDetails.password = encoder.encode(userDetails.password) })
+        return save(user.apply { userDetails.password = encoder.encode(userDetails.password); })
     }
 
     fun emailExists(email: String) = userDao.existsByEmail(email)
